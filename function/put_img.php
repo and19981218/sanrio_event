@@ -13,11 +13,19 @@ function putImg($data) {
 
         $html = file_get_contents($data);
         $html_dom = phpQuery::newDocument($html);
-        $scraped_src = $html_dom[".main_container"]->find("img");
-        mb_convert_variables('SJIS', 'UTF-8', $scraped_src);
+        $scraped_str = $html_dom[".main_container"];
+        mb_convert_variables('SJIS', 'UTF-8', $scraped_str);
+        $img_src = $scraped_str->find('img');
+
+        // 関連キャラ抜き出し
+        $scraped_relate = $html_dom['.relation_box'];
+        $relate_img_src = $scraped_relate->find('img');
 
         // html画像ダウンロード
-        for ($j = 0; $j < $scraped_src->length(); $j++) {
+        $img_length = $img_src->length();
+        $relate_img_length = $relate_img_src->length();
+        $all_img_src = $img_length - $relate_img_length;
+        for ($j = 0; $j < $all_img_src; $j++) {
             $src_url = $html_dom[".main_container"]->find("img:eq($j)")->attr('src');
             $img_data = file_get_contents($src_url);
             // 拡張子取得
@@ -29,18 +37,8 @@ function putImg($data) {
 
         // css(bg)画像
         $bg_img = [
-            'https://www.sanrio.co.jp/common_v2/img/bg_cont_part.gif',
-            'https://www.sanrio.co.jp/common_v2/img/icon_arr_right_large.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_ext_link_white.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_ext_link.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_carousel_prev.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_carousel_next.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_indicater.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_indicater_active.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_accordion_on.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_accordion_off.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_oshop.png',
-            'https://www.sanrio.co.jp/common_v2/img/icon_cart.png'
+            'https://www.sanrio.co.jp/common_v2/img/icon_arr_right_pink.png',
+            'https://www.sanrio.co.jp/common_v2/img/icon_print.png'
         ];
         
         $count_bg = count($bg_img);

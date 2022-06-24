@@ -24,13 +24,22 @@ function putFile($data) {
         mb_convert_variables('SJIS', 'UTF-8', $scraped_str);
         $scraped_ttl = $scraped_str->find('h2:eq(0)')->text();
         $img_src = $scraped_str->find('img');
-
+        
+        // 関連キャラ抜き出し
+        $scraped_relate = $html_dom['.relation_box'];
+        $relate_img_src = $scraped_relate->find('img');
+        mb_convert_variables('SJIS', 'UTF-8', $scraped_relate);
+        $scraped_str = str_replace($scraped_relate, '', $scraped_str);
+        
         // id付与
-        $scraped_str = preg_replace('/<div class="main_container">/', '<div id="old_event" class="main_container">', $scraped_str);
+        $scraped_str = str_replace('<div class="main_container">', '<div id="old_event" class="main_container">', $scraped_str);
 
         // html画像パス書き換え
-        for ($j = 0; $j < $img_src->length(); $j++) {
-            $src_url = $html_dom[".main_container"]->find("img:eq($j)")->attr('src');
+        $img_length = $img_src->length();
+        $relate_img_length = $relate_img_src->length();
+        $all_img_src = $img_length - $relate_img_length;
+        for ($j = 0; $j < $all_img_src; $j++) {
+            $src_url = $html_dom['.main_container']->find("img:eq($j)")->attr('src');
             // 拡張子取得
             $ext = pathinfo($src_url, PATHINFO_EXTENSION);
             // 画像パス
@@ -53,18 +62,8 @@ function putFile($data) {
 
         // css画像パス書き換え
         $bg_img = [
-            '/common_v2/img/bg_cont_part.gif',
-            '/common_v2/img/icon_arr_right_large.png',
-            '/common_v2/img/icon_ext_link_white.png',
-            '/common_v2/img/icon_ext_link.png',
-            '/common_v2/img/icon_carousel_prev.png',
-            '/common_v2/img/icon_carousel_next.png',
-            '/common_v2/img/icon_indicater.png',
-            '/common_v2/img/icon_indicater_active.png',
-            '/common_v2/img/icon_accordion_on.png',
-            '/common_v2/img/icon_accordion_off.png',
-            '/common_v2/img/icon_oshop.png',
-            '/common_v2/img/icon_cart.png'
+            '/common_v2/img/icon_arr_right_pink.png',
+            '/common_v2/img/icon_print.png'
         ];
         $bg_img_length = count($bg_img);
         for ($p = 0; $p < $bg_img_length; $p++) {
